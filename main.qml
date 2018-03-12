@@ -15,11 +15,11 @@ Window {
         id: mycanvas
         anchors.fill: parent
         onPaint: {
-            console.log(controlPoints.count);
-            if(controlPoints.count > 0) {
-                var ctx = getContext("2d");
-                ctx.lineWidth = 5;
-                ctx.strokeStyle = "red"
+            var ctx = getContext("2d");
+            ctx.reset();
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = "red"
+            if(controlPoints.count > 1) {
                 var p = controlPoints.get(0);
                 ctx.moveTo(p.xpos, p.ypos);
                 for(var i= 1; i < controlPoints.count; i ++) {
@@ -33,35 +33,46 @@ Window {
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill: mycanvas
         onPressed: {
-            controlPoints.append({"xpos": mouse.x + 10, "ypos": mouse.y - 10});
-            mycanvas.requestPaint();
+            controlPoints.append({"xpos": mouse.x - 15/2, "ypos": mouse.y - 15/2, "next": {}, "prev": {}});
         }
     }
 
     Repeater {
         model: controlPoints
-        delegate: Rectangle {
-            id: marker
-            x: xpos; y: ypos
-            color: focus ? "green" : "blue"
-            width: 10; height: width
-            radius: width/2
+        onItemAdded: {
+            if(activeFocusItem instanceof ControlPoint) {
+                var prev = activeFocusItem
+                item.prevPoint = prev;
+                prev.nextPoint = item;
+            }
+            item.focus = true;
+            mycanvas.requestPaint()
+        }
+        delegate: Item {
+            ControlPoint {
+                x: xpos; y: ypos;
+                prevPoint: prev; nextPoint: next
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: parent.focus = true
-                drag.target: parent
-                drag.axis: "XAndYAxis"
-                onPositionChanged: if(drag.active) { xpos = mouse.x; mycanvas.requestPaint(); }
+                MouseArea {
+                      anchors.fill: parent
+                      scale: 1.8
+                      onClicked: parent.focus = true
+                      drag.target: parent
+                      drag.axis: "XAndYAxis"
+                      drag.smoothed: true
+                      drag.threshold: 0
+                      onPositionChanged: if(drag.active) { xpos += mouse.x - 15/2; ypos += mouse.y - 15/2; mycanvas.requestPaint() }
+                  }
             }
         }
     }
 
     Slider {
         anchors.bottom: mycanvas.bottom
-        anchors.horizontalCenter: mycanvas
+        anchors.horizontalCenter: mycanvas.horizontalCenter
         value: 0.5
     }
 
