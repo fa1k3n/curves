@@ -55,20 +55,42 @@ Window {
         }
     }
 
+
+    function getTarget(item, conn) {
+        if (!conn) return null
+        return conn.start === item ? conn.start : conn.end
+    }
+
+    function isConnected(left, right) {
+        console.log("isConnected: " + getTarget(left, left.model.prev) + " " + right)
+        console.log("isConnected: " + getTarget(left, left.model.next) + " " + right)
+
+        return (getTarget(left, left.model.prev) === right || getTarget(left, left.model.next) === right)
+    }
+
+    function connectPoints(left, right) {
+        console.log("Connecting " + left + " with " + right)
+
+        if(isConnected(left, right)) {
+            console.log("Items already connected");
+            return;
+        }
+
+        var conn = line.createObject(root, { "start": left, "end": right});
+        right.model.next = conn
+        left.model.prev = conn
+    }
+
     Repeater {
         model: controlPoints
-
-        function connectPoints(left, right) {
-            var conn = line.createObject(root, { "start": left, "end": right});
-            right.model.next = conn
-            left.model.prev = conn
-        }
 
         onItemAdded: {
             if(activeFocusItem instanceof ControlPoint) {
                 // Connect these two objects up
-                connectPoints(item, activeFocusItem)
+                console.log("Item " + item)
+               connectPoints(item, activeFocusItem)
             }
+            console.log("Item " + item + " left " + item.model.left + " right " + item.model.right)
             item.focus = true;
         }
 
@@ -85,7 +107,15 @@ Window {
                 MouseArea {
                       anchors.fill: parent
                       scale: 1.8
-                      onClicked: parent.focus = true
+                      onClicked: {
+                          //if(activeFocusItem instanceof ControlPoint) {
+                          //    console.log("CONNECTING");
+                          //    connectPoints(activeFocusItem, thePoint);
+                          //}
+                          console.log("Item " + thePoint + " left " + thePoint.model.prev + " right " + thePoint.next)
+
+                          parent.focus = true
+                      }
                       drag.target: parent
                       drag.axis: "XAndYAxis"
                       drag.smoothed: true
