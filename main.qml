@@ -1,84 +1,86 @@
 import QtQuick 2.9
 import QtQuick.Window 2.2
 import QtQuick.Controls 2.0
+import QtGraphicalEffects 1.0
+
+
+import fa1k3n.curves 1.0
 
 Window {
     visible: true
     id: root
     width: 640
     height: 480
+    color: "#2E2F30"
     title: qsTr("Hello World")
 
-    ListModel {
-        id: controlPoints
-    }
-
-    Canvas {
+    /*Canvas {
         id: mycanvas
         anchors.fill: parent
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.reset();
-            ctx.lineWidth = 5;
-            ctx.strokeStyle = "red"
-            if(controlPoints.count > 1) {
-                for(var i= 1; i < controlPoints.count; i ++) {
-                    var p = controlPoints.get(i);
-                    console.log("Parent : " + p.parent);
-                    // Move below to list model
-                    if(p.parent != -1) {
-                        var lineWidth = 5;
-                        var startX = p.xpos + 15
-                        var startY = p.ypos + 15/2 - lineWidth/2
-                        var length = 100;
-                        var rot = 0
-                        line.createObject(root, {"x": startX, "y": startY, "width": length, "height": 5, "rotation": rot});
-                    }
-                }
-                /*var p = controlPoints.get(0);
-                ctx.moveTo(p.xpos, p.ypos);
-                for(var i= 1; i < controlPoints.count; i ++) {
-                    p = controlPoints.get(i);
-                    ctx.lineTo(p.xpos, p.ypos);
-                }*/
-                //ctx.stroke()
-            }
-        }
+    }*/
 
-    }
-
-    Component {
-    id: line
-        Rectangle {
-            color: "green"
-            visible: true
-
-        }
+    ListModel {
+        id: controlPoints        
     }
 
     MouseArea {
         id: mouseArea
-        anchors.fill: mycanvas
+        anchors.fill: parent
         onPressed: {
-            controlPoints.append({"xpos": mouse.x - 15/2, "ypos": mouse.y - 15/2, "next": {}, "prev": {}});
+             controlPoints.append({xpos: mouse.x, ypos: mouse.y, next: null, prev: null});
+        }
+    }
+
+    Component {
+        id: line
+
+        Line {
+            id: theLine
+            width: 2
+            color: "#F76494"
+
+            function doDestroy() {
+                //destroyAnimation.start()
+                destroy()
+            }
+
+            PropertyAnimation on opacity {from: 0; to: 1; duration: 400}
+
+            SequentialAnimation {
+                id: destroyAnimation
+                PropertyAnimation {target: theLine; property: "opacity"; from: 1; to: 0; duration: 400}
+                ScriptAction { script: destroy() }
+            }
+
         }
     }
 
     Repeater {
         model: controlPoints
+
+        function connectPoints(left, right) {
+            var conn = line.createObject(root, { "start": left, "end": right});
+            right.model.next = conn
+            left.model.prev = conn
+        }
+
         onItemAdded: {
             if(activeFocusItem instanceof ControlPoint) {
-                var prev = activeFocusItem
-                item.prevPoint = prev;
-                prev.nextPoint = item;
+                // Connect these two objects up
+                connectPoints(item, activeFocusItem)
             }
             item.focus = true;
-            mycanvas.requestPaint()
         }
-        delegate: Item {
+
+        onItemRemoved: {
+
+        }
+
+        delegate:
             ControlPoint {
-                x: xpos; y: ypos;
-                prevPoint: prev; nextPoint: next
+                model: controlPoints.get(index)
+                id: thePoint
+                radius: 8
 
                 MouseArea {
                       anchors.fill: parent
@@ -88,15 +90,62 @@ Window {
                       drag.axis: "XAndYAxis"
                       drag.smoothed: true
                       drag.threshold: 0
-                      onPositionChanged: if(drag.active) { xpos += mouse.x - 15/2; ypos += mouse.y - 15/2; mycanvas.requestPaint() }
-                  }
+                      onPositionChanged: if(drag.active) { parent.focus = true; model.xpos += mouse.x - thePoint.width/2; model.ypos += mouse.y - thePoint.height/2 }
+                }
+
+                Keys.onDeletePressed: {
+                    destroyAnimation.start()
+                    var left, right;
+                    // Remove the line connectors
+                   if(thePoint.model.prev) {
+                        left = thePoint.model.prev.end;
+                        thePoint.model.prev.doDestroy();
+                    }
+
+                    if(thePoint.model.next) {
+                        right = thePoint.model.next.start;
+                        thePoint.model.next.doDestroy();
+                    }
+
+                    // Setup new connections
+                    if(left && right) {
+                        var conn = line.createObject(root, { "start": left, "end": right});
+                        right.model.next = conn
+                        left.model.prev = conn
+                    }
+
+                    for(var i = 0; i < controlPoints.count; i++) {
+                        if(thePoint.model.prev && thePoint.model.prev.start === thePoint)
+                            console.log("HUSTON WE HAVE AN PROBLEM " +  + " " + controlPoints.get(i).next + " " + thePoint.model.prev.start + " " + thePoint)
+                    }
+                }
+
+                // Destroy animation
+                SequentialAnimation {
+                    id: destroyAnimation
+                    running: false; loops: 1
+                    ParallelAnimation {
+                        PropertyAnimation {target: thePoint; property: "opacity"; from: 1; to: 0; duration: 400}
+                        PropertyAnimation {target: thePoint; property: "radius"; from: 8; to: 40; duration: 400}
+                    }
+                    //ScriptAction {
+                    //    script: controlPoints.remove(index);
+                    //}
+                }
+
+                // Creation animation
+                ParallelAnimation {
+                    id: createAnimation
+                    running: true; loops: 1
+                    PropertyAnimation {target: thePoint; property: "opacity"; from: 0; to: 1; duration: 400}
+                    PropertyAnimation {target: thePoint; property: "radius"; from: 40; to: 8; duration: 400}
+                }
             }
-        }
     }
 
     Slider {
-        anchors.bottom: mycanvas.bottom
-        anchors.horizontalCenter: mycanvas.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
         value: 0.5
     }
 

@@ -1,28 +1,35 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 
-Rectangle {
-   id: marker
-   objectName: "marker"
-   color: "transparent"
-   property var nextPoint
-   property var prevPoint
+Item {
+   property QtObject model
+    property real radius: 8
+   x: model.xpos - width/2
+   y: model.ypos - height/2
+   width: radius*2; height: width
 
-   x: xpos; y: ypos;
-   border.color: focus ? "green" : "blue"
-   border.width: 3
-   width: 15; height: width
-   radius: width/2
+   Rectangle {
+       id: marker
+       color: "transparent"
+       anchors.fill: parent
+       border.color: "#c18c45"
+       border.width: 3
+       radius: parent.width/2
+    }
+   Glow {
+       id: selGlow
+       visible: parent.focus
+       anchors.fill: marker
+       radius: 2
+       samples: 17
+       color: "white"
+       source: marker
 
- onFocusChanged: {
-     if(focus) {
-         console.log("prev " + prevPoint + " next " + nextPoint);
-     }
- }
-/*
- Rectangle {
-     x: marker.x; y: marker.y
-     width: modelItem.prev.xpos; height: modelItem.prev.ypos
-     visible: modelItem.prev !== null
-     color: "red"
- }*/
+       SequentialAnimation {
+           loops: Animation.Infinite
+           running: selGlow.visible
+           NumberAnimation {target: selGlow; property: "radius"; from: 2; to: 8; duration: 1000}
+           NumberAnimation {target: selGlow; property: "radius"; from: 8; to: 2; duration: 1000}
+       }
+   }
 }
