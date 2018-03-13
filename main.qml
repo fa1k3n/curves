@@ -9,7 +9,9 @@ Window {
     height: 480
     title: qsTr("Hello World")
 
-    ListModel { id: controlPoints }
+    ListModel {
+        id: controlPoints
+    }
 
     Canvas {
         id: mycanvas
@@ -20,16 +22,38 @@ Window {
             ctx.lineWidth = 5;
             ctx.strokeStyle = "red"
             if(controlPoints.count > 1) {
-                var p = controlPoints.get(0);
+                for(var i= 1; i < controlPoints.count; i ++) {
+                    var p = controlPoints.get(i);
+                    console.log("Parent : " + p.parent);
+                    // Move below to list model
+                    if(p.parent != -1) {
+                        var lineWidth = 5;
+                        var startX = p.xpos + 15
+                        var startY = p.ypos + 15/2 - lineWidth/2
+                        var length = 100;
+                        var rot = 0
+                        line.createObject(root, {"x": startX, "y": startY, "width": length, "height": 5, "rotation": rot});
+                    }
+                }
+                /*var p = controlPoints.get(0);
                 ctx.moveTo(p.xpos, p.ypos);
                 for(var i= 1; i < controlPoints.count; i ++) {
                     p = controlPoints.get(i);
                     ctx.lineTo(p.xpos, p.ypos);
-                }
-                ctx.stroke()
+                }*/
+                //ctx.stroke()
             }
         }
 
+    }
+
+    Component {
+    id: line
+        Rectangle {
+            color: "green"
+            visible: true
+
+        }
     }
 
     MouseArea {
