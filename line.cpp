@@ -58,6 +58,9 @@ void Line::setStart(QQuickItem *p) {
         emit startChanged(p);
         update();
     });
+    connect(p, &QQuickItem::destroyed, [=]() {
+        emit startChanged(p);
+    });
     update();
 }
 
@@ -71,6 +74,9 @@ void Line::setEnd(QQuickItem *p) {
     connect(p, &QQuickItem::xChanged, [=]() {
         emit endChanged(p);
         update();
+    });
+    connect(p, &QQuickItem::destroyed, [=]() {
+        emit endChanged(p);
     });
     update();
 }

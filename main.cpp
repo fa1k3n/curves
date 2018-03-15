@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 
 #include <line.h>
-
+#include <chaikins.h>
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Line>("fa1k3n.curves", 1, 0, "Line");
+    qmlRegisterType<Chaikins>("fa1k3n.curves", 1, 0, "ChaikinsCurve");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
