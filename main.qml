@@ -1,8 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Window 2.2
-import QtQuick.Controls 2.0
+import QtQuick.Controls 2.3
 import QtGraphicalEffects 1.0
-
+import QtQml.Models 2.1
 
 import fa1k3n.curves 1.0
 
@@ -12,7 +12,7 @@ Window {
     width: 640
     height: 480
     color: "#2E2F30"
-    title: qsTr("Hello World")
+    title: qsTr("Curves")
 
     ChaikinsModel {
         id: chaikinsModel
@@ -38,6 +38,7 @@ Window {
             id: theLine
             width: 2
             color: "#F76494"
+            visible: showControlPolygon.checked
 
             onStartChanged: {
                 if(!start) destroyAnimation.start()
@@ -61,7 +62,11 @@ Window {
         model: chaikinsModel
         id: test
 
-        onItemAdded: item.focus = true;
+        onItemAdded: {
+            if(index > 0)
+                line.createObject(root, {"start": test.itemAt(index), "end": test.itemAt(index - 1)});
+            item.focus = true;
+        }
 
         delegate:
             ControlPoint {
@@ -113,36 +118,115 @@ Window {
             }
     }
 
-    Slider {
-        id: refinementSlider
+    Rectangle {
         anchors.bottom: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        value: 0
-        stepSize: 1.0
+        width: parent.width * 3/4
+        height: 40
+        radius: 4
+        color: "#414244"
+        id: controlBar
+        anchors.margins: {
+            left: 10
+            right: 10
+            bottom: 10
+            top: 5
+        }
+        opacity: 1
 
-        from: 0
-        to: 10
-    }
+        Timer {
+            id: hideTimer
+            interval: 1000
+            running: true
+            repeat: false
+            onTriggered: hideAnim.start()
+        }
 
-    Drawer {
-        id: drawer
-        width: 0.25 * root.width
-        height: root.height
+        PropertyAnimation on opacity { id: hideAnim; from: controlBar.opacity; to: 0; running: false }
+        PropertyAnimation on opacity { id: showAnim; from: controlBar.opacity; to: 1; running: false }
 
-        Label {
-            Column {
-                CheckBox {
-                    text: qsTr("Blue")
-                    checked: true
+        Row {
+            anchors.centerIn: controlBar
+
+            CheckBox {
+                id: showControlPolygon
+                anchors.verticalCenter: parent.verticalCenter
+                text: qsTr("Show control polygon")
+                checked: true
+                indicator: Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    implicitWidth: 16
+                    implicitHeight: 16
+                    radius: 3
+                    color: "#B6DDE7"
+
+                    border.width: 1
+                    Rectangle {
+                        visible: showControlPolygon.checked
+                        color: "#215664"
+                        radius: 1
+                        anchors.margins: 4
+                        anchors.fill: parent
+                    }
                 }
-                CheckBox {
-                    text: qsTr("Red")
-                }
-                CheckBox {
-                    text: qsTr("Green")
-                    checked: true
+
+                contentItem: Text {
+                    text: showControlPolygon.text
+                    font: showControlPolygon.font
+                    color: "#66B7CD"
+                    verticalAlignment: Text.AlignVCenter
+                    leftPadding: 15
+                    rightPadding: showControlPolygon.indicator.width + showControlPolygon.spacing
                 }
             }
+
+            Slider {
+                id: refinementSlider
+                value: 0
+                stepSize: 1.0
+
+                from: 0
+                to: 10
+
+                background: Rectangle {
+                    x: refinementSlider.leftPadding
+                    y: refinementSlider.topPadding + refinementSlider.availableHeight / 2 - height / 2
+                    implicitWidth: 200
+                    implicitHeight: 4
+                    width: refinementSlider.availableWidth
+                    height: implicitHeight
+                    radius: 2
+                    color: "#215664"
+
+                    Rectangle {
+                        width: refinementSlider.visualPosition * parent.width
+                        height: parent.height
+                        color: "#B6DDE7"
+                        radius: 2
+                    }
+                }
+
+                handle: Rectangle {
+                    x: refinementSlider.leftPadding + refinementSlider.visualPosition * (refinementSlider.availableWidth - width)
+                    y: refinementSlider.topPadding + refinementSlider.availableHeight / 2 - height / 2
+                    implicitWidth: 8
+                    implicitHeight: 18
+                    radius: 2
+                    color: "#66B7CD"
+                }
+
+            }
         }
+
+        MouseArea {
+            anchors.fill: controlBar
+            hoverEnabled: true
+
+            // Do this as state machine instead
+            onEntered: { hideTimer.stop(); hideAnim.stop(); showAnim.start(); }
+            onExited: { hideTimer.start() }
+            onPressed: mouse.accepted = false
+        }
+
     }
 }

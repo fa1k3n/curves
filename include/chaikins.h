@@ -50,7 +50,6 @@ signals:
     void modelChanged(ChaikinsModel* model);
 
 private:
-    QVariantList* refine(QVariantList&);
     ChaikinsModel* m_model;
     int m_refinment;
 };

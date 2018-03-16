@@ -21,16 +21,6 @@ void Chaikins::setRefinement(int newRefinement) {
     update();
 }
 
-QVariantList* Chaikins::refine(QVariantList& oldControlPoints) {
-    auto newControlPoints = new QVariantList;
-    for(int i = 1; i < oldControlPoints.size(); i++) {
-        QPoint diff = oldControlPoints[i].toPoint() - oldControlPoints[i-1].toPoint();
-        newControlPoints->push_back(QVariant(oldControlPoints[i-1].toPoint() + diff*1/4));
-        newControlPoints->push_back(QVariant(oldControlPoints[i].toPoint() - diff*1/4));
-    }
-    return newControlPoints;
-}
-
 void Chaikins::setModel(ChaikinsModel* model) {
     if(m_model == model)
         return;

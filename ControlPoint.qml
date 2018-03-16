@@ -4,6 +4,7 @@ import QtGraphicalEffects 1.0
 Item {
     id: root
    property real radius: 8
+   property color color: "#c18c45"
    x: xpos - width/2
    y: ypos - height/2
    width: radius*2; height: width
@@ -12,7 +13,7 @@ Item {
        id: marker
        color: "transparent"
        anchors.fill: parent
-       border.color: "#c18c45"
+       border.color: root.color
        border.width: 3
        radius: parent.width/2
     }
