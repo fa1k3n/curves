@@ -8,6 +8,21 @@ set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
-add_executable(${PROJECT_NAME} "main.cpp" "line.cpp" "chaikins.cpp" "qml.qrc")
+set(SRC
+    "src/main.cpp"
+    "src/line.cpp"
+    "src/chaikins.cpp"
+    "src/chaikins_model.cpp"
+)
+
+set(INC
+    "include/line.h"
+    "include/chaikins.h"
+    )
+
+
+include_directories(include)
+
+add_executable(${PROJECT_NAME} ${SRC} ${INC} "qml.qrc")
 
 target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Quick)

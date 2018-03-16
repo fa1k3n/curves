@@ -14,23 +14,21 @@ Window {
     color: "#2E2F30"
     title: qsTr("Hello World")
 
+    ChaikinsModel {
+        id: chaikinsModel
+    }
+
     ChaikinsCurve {
         id: curve
         anchors.fill: parent
         refinement: refinementSlider.value
-        controlPolygon: controlPoints
-    }
-
-    ListModel {
-        id: controlPoints
+        model: chaikinsModel
     }
 
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-        onPressed: {
-             controlPoints.append({pos: Qt.point(mouse.x, mouse.y), xpos: mouse.x, ypos: mouse.y, next: null, prev: null});
-        }
+        onPressed: chaikinsModel.append(Qt.point(mouse.x, mouse.y))
     }
 
     Component {
@@ -59,45 +57,31 @@ Window {
         }
     }
 
-    function connectPoints(left, right) {
-        right.next = left
-        left.prev = right
-        line.createObject(root, { "start": left, "end": right});
-    }
-
     Repeater {
-        model: controlPoints
+        model: chaikinsModel
         id: test
 
-        onItemAdded: {
-            if(activeFocusItem instanceof ControlPoint) {
-                // Connect these two objects up
-               connectPoints(item, activeFocusItem)
-            }
-            item.focus = true;
-        }
+        onItemAdded: item.focus = true;
 
         delegate:
             ControlPoint {
                 id: thePoint
                 radius: 8
-                x: xpos - width/2
-                y: ypos - height/2
+                x: position.x - width/2
+                y: position.y - height/2
 
                 MouseArea {
                       anchors.fill: parent
                       scale: 1.8
-                      onClicked: {
-                          if(activeFocusItem instanceof ControlPoint) {
-                              connectPoints(activeFocusItem, thePoint);
-                          }
-                          parent.focus = true
-                      }
+                      onClicked: parent.focus = true  //if(activeFocusItem instanceof ControlPoint)
                       drag.target: parent
                       drag.axis: "XAndYAxis"
                       drag.smoothed: true
                       drag.threshold: 0
-                      onPositionChanged: if(drag.active) { parent.focus = true; xpos += mouse.x - thePoint.width/2; ypos += mouse.y - thePoint.height/2 }
+                      onPositionChanged: if(drag.active) {
+                        parent.focus = true;
+                        position = Qt.point(thePoint.x + mouse.x, thePoint.y + mouse.y)
+                     }
                 }
 
                 Keys.onDeletePressed: {
@@ -114,12 +98,7 @@ Window {
                     }
                     ScriptAction {
                         script: {
-                            var left  = test.itemAt(index-1)
-                            var right = test.itemAt(index+1)
-                            console.log("L " + left + " R " + right);
-                            // Setup new connections
-                            if(left && right) connectPoints(left, right);
-                            controlPoints.remove(index);
+                            chaikinsModel.remove(index);
                         }
                     }
                 }

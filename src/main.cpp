@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<Line>("fa1k3n.curves", 1, 0, "Line");
     qmlRegisterType<Chaikins>("fa1k3n.curves", 1, 0, "ChaikinsCurve");
+    qmlRegisterType<ChaikinsModel>("fa1k3n.curves", 1, 0, "ChaikinsModel");
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));

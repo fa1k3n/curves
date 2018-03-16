@@ -3,8 +3,6 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: root
-   property QtObject next
-   property QtObject prev
    property real radius: 8
    x: xpos - width/2
    y: ypos - height/2
@@ -18,11 +16,6 @@ Item {
        border.width: 3
        radius: parent.width/2
     }
-
-   Text {
-       anchors.left: parent.right
-       text: "" + root
-   }
 
    Glow {
        id: selGlow
