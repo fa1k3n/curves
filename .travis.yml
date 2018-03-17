@@ -28,4 +28,4 @@ before_script:
     - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt55/lib/cmake 
 
 script:
-	- make
+    - make
