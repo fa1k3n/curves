@@ -2,7 +2,7 @@ language: cpp
 os: linux
 compiler: gcc
 sudo: required
-dist: trusty
+dist: xenial
 
 addons:
   apt:
@@ -11,21 +11,19 @@ addons:
       - g++-4.8
 
 before_install:
-    - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
+    - sudo apt-add-repository --yes ppa:beineri/opt-qt-5.10.0-xenial
     - sudo apt-get -qq update
 
 install:
-    - sudo apt-get --yes install qt55base
-    - export CXX="g++-4.8"
-    - export CC="gcc-4.8"
+    - sudo apt-get install -y qt510base qt510quickcontrols2 mesa-common-dev
 
 before_script:
-    - QTDIR="/opt/qt55"
+    - QTDIR="/opt/qt510"
     - PATH="$QTDIR/bin:$PATH"
-    - source /opt/qt55/bin/qt55-env.sh
+    - source /opt/qt510/bin/qt510-env.sh
 
     # cmake build of the project
-    - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt55/lib/cmake 
+    - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt510/lib/cmake 
 
 script:
     - make
