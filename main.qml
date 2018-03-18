@@ -28,17 +28,28 @@ Window {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-        onPressed: chaikinsModel.append(Qt.point(mouse.x, mouse.y))
+        onPressed: {
+            var p = Qt.point(mouse.x, mouse.y);
+            var index = chaikinsModel.append(p);
+            if(index > 0) // Connect with previous
+                chaikinsModel.connect(p, chaikinsModel.get(index - 1));
+        }
     }
 
-    Component {
-        id: line
+    //Component {
+    //    id: line
+
+    Repeater {
+        model: chaikinsModel
+        id: connectors
 
         Line {
             id: theLine
             width: 2
             color: "#F76494"
             visible: showControlPolygon.checked
+            start: position ;
+            end: prev ? position.prev.position : Qt.point(0, 0);
 
             onStartChanged: {
                 if(!start) destroyAnimation.start()
@@ -63,8 +74,8 @@ Window {
         id: test
 
         onItemAdded: {
-            if(index > 0)
-                line.createObject(root, {"start": test.itemAt(index), "end": test.itemAt(index - 1)});
+            //if(index > 0)
+            //    line.createObject(root, {"start": test.itemAt(index), "end": test.itemAt(index-1)});
             item.focus = true;
         }
 

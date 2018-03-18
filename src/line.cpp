@@ -5,8 +5,8 @@
 #include <QSGFlatColorMaterial>
 
 Line::Line(QQuickItem *parent) : QQuickItem(parent)
-    , m_start(nullptr)
-    , m_end(nullptr)
+    , m_start(QPoint(0, 0))
+    , m_end(QPoint(0, 0))
     , m_width(0)
     , m_color(QColor("red")) {
     setFlag(ItemHasContents, true);
@@ -41,43 +41,43 @@ QSGNode* Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
 
     QSizeF itemSize = size();
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
-    vertices[0].set(m_start->x() + m_start->width()/2, m_start->y() + m_start->height()/2);
-    vertices[1].set(m_end->x() + m_end->width()/2, m_end->y() + m_end->height()/2);
+    vertices[0].set(m_start.x(), m_start.y());
+    vertices[1].set(m_end.x(), m_end.y());
 
     node->markDirty(QSGNode::DirtyGeometry);
     return node;
 }
 
-void Line::setStart(QQuickItem *p) {
+void Line::setStart(QPoint &p) {
     if(p == m_start)
         return;
 
     m_start = p;
     emit startChanged(p);
-    connect(p, &QQuickItem::xChanged, [=]() {
+    /*connect(p, &QQuickItem::xChanged, [=]() {
         emit startChanged(p);
         update();
     });
     connect(p, &QQuickItem::destroyed, [=]() {
         emit startChanged(p);
-    });
+    });*/
     update();
 }
 
 
-void Line::setEnd(QQuickItem *p) {
+void Line::setEnd(QPoint &p) {
     if(p == m_end)
         return;
 
     m_end = p;
     emit endChanged(p);
-    connect(p, &QQuickItem::xChanged, [=]() {
+   /* connect(p, &QQuickItem::xChanged, [=]() {
         emit endChanged(p);
         update();
     });
     connect(p, &QQuickItem::destroyed, [=]() {
         emit endChanged(p);
-    });
+    });*/
     update();
 }
 
