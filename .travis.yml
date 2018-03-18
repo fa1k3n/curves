@@ -25,7 +25,7 @@ before_script:
 
     # cmake build of the project
     - mkdir build && cd build
-    - cmake -DCOVERAGE=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt510/lib/cmake 
+    - cmake -DCOVERAGE=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt510/lib/cmake ..
 
 script:
     - make
