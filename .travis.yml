@@ -29,7 +29,7 @@ before_script:
 
 script:
     - make
-    - ./test/unittest/curves_test
+    - ./test/curves_test
 
 after_success:
     - cd ..
