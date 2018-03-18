@@ -8,10 +8,16 @@ using namespace testing;
 
 TEST(line, basicConstructor) {
     Line line;
-
     EXPECT_EQ(QColor("red"), line.color());
     EXPECT_EQ(QPoint(0, 0), line.start());
     EXPECT_EQ(QPoint(0, 0), line.end());
+}
+
+TEST(line, basicConstructorWithArgs) {
+    QPoint p1(1, 2), p2(4, 5);
+    Line line(p1, p2);
+    EXPECT_EQ(p1, line.start());
+    EXPECT_EQ(p2, line.end());
 }
 
 TEST(line, setStartPosition) {

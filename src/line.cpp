@@ -11,6 +11,13 @@ Line::Line(QQuickItem *parent) : QQuickItem(parent)
     setFlag(ItemHasContents, true);
 }
 
+Line::Line(QPoint &start, QPoint& end, QQuickItem *parent) : QQuickItem(parent)
+    , m_start(start)
+    , m_end(end)
+    , m_color(QColor("red")) {
+    setFlag(ItemHasContents, true);
+}
+
 Line::~Line() {
 
 }

@@ -14,6 +14,7 @@ class Line : public QQuickItem
 
 public:
     Line(QQuickItem *parent = 0);
+    Line(QPoint& start, QPoint &end, QQuickItem *parent = 0);
     ~Line();
 
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *);
