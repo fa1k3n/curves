@@ -17,11 +17,13 @@ QVariant ChaikinsModel::data(const QModelIndex &index, int role) const {
 
     if(role == PositionRole)
         return m_controlPoints.at(index.row());
-    else if(role == PrevRole)
-        if(m_controlPoints.at(index.row()).prev())
+    else if(role == PrevRole) {
+        if(m_controlPoints.at(index.row()).prev()) {
             return *m_controlPoints.at(index.row()).prev();
-        else
+        } else {
             return m_controlPoints.at(index.row());
+        }
+    }
 
     return QVariant();
 }
@@ -77,6 +79,7 @@ ControlPoint* ChaikinsModel::find(QPoint p) {
     for(int i = 0; i < m_controlPoints.count(); i++) {
         if(m_controlPoints[i] == p) return &m_controlPoints[i];
     }
+    return nullptr;
 }
 
 void ChaikinsModel::remove(int index) {

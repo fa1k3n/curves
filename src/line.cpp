@@ -7,7 +7,6 @@
 Line::Line(QQuickItem *parent) : QQuickItem(parent)
     , m_start(QPoint(0, 0))
     , m_end(QPoint(0, 0))
-    , m_width(0)
     , m_color(QColor("red")) {
     setFlag(ItemHasContents, true);
 }
@@ -24,7 +23,7 @@ QSGNode* Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
         node = new QSGGeometryNode;
 
         geometry = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 2);
-        geometry->setLineWidth(m_width);
+        geometry->setLineWidth(width());
         geometry->setDrawingMode(QSGGeometry::DrawLineStrip);
         node->setGeometry(geometry);
         node->setFlag(QSGNode::OwnsGeometry);
@@ -53,14 +52,8 @@ void Line::setStart(QPoint &p) {
         return;
 
     m_start = p;
-    emit startChanged(p);
-    /*connect(p, &QQuickItem::xChanged, [=]() {
-        emit startChanged(p);
-        update();
-    });
-    connect(p, &QQuickItem::destroyed, [=]() {
-        emit startChanged(p);
-    });*/
+    emit lineChanged();
+
     update();
 }
 
@@ -70,23 +63,8 @@ void Line::setEnd(QPoint &p) {
         return;
 
     m_end = p;
-    emit endChanged(p);
-   /* connect(p, &QQuickItem::xChanged, [=]() {
-        emit endChanged(p);
-        update();
-    });
-    connect(p, &QQuickItem::destroyed, [=]() {
-        emit endChanged(p);
-    });*/
-    update();
-}
+    emit lineChanged();
 
-void Line::setWidth(int w) {
-    if(w == m_width)
-        return;
-
-    m_width = w;
-    emit widthChanged(w);
     update();
 }
 
