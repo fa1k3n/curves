@@ -33,4 +33,4 @@ script:
 
 after_success:
     - cd ..
-    - coveralls --root . -e build -e test -e external -E ".*gtest.*" -E ".*CMakeFiles.*" 
+    - coveralls --root ./build -e build -e test -e external -E ".*gtest.*" -E ".*CMakeFiles.*" 
