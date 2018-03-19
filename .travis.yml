@@ -32,5 +32,5 @@ script:
     - ./test/curves_test
 
 after_success:
-    - cd ..
-    - coveralls --root ./build -e build -e test -e external -E ".*gtest.*" -E ".*CMakeFiles.*" 
+    - coveralls --root .. -e test -e external -E ".*gtest.*" -E ".*CMakeFiles.*" -E "moc.*"
+
