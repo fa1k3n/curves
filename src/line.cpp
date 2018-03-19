@@ -45,7 +45,6 @@ QSGNode* Line::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
         geometry->allocate(2);
     }
 
-    QSizeF itemSize = size();
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
     vertices[0].set(m_start.x(), m_start.y());
     vertices[1].set(m_end.x(), m_end.y());

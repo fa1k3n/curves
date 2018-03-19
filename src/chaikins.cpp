@@ -69,8 +69,6 @@ QSGNode* Chaikins::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
         geometry->allocate(refinedData.count());
     }
 
-    QSizeF itemSize = size();
-
     QSGGeometry::Point2D *vertices = geometry->vertexDataAsPoint2D();
     for (int i = 0; i < refinedData.count(); i++) {
        vertices[i].set(refinedData[i].x(), refinedData[i].y());
