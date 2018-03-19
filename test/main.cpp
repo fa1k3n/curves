@@ -1,5 +1,3 @@
-#include "tst_chaikins_model.h"
-
 #include <gtest/gtest.h>
 
 int main(int argc, char *argv[])

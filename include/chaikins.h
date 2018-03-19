@@ -12,28 +12,8 @@ public:
 
     ControlPoint* prev(void) const { return m_prev; }
     ControlPoint* next(void) const { return m_next; }
-
-    bool connect(ControlPoint* c) {
-        m_prev = c;
-        c->m_next = this;
-        return true;
-    }
-
-    bool disconnect(ControlPoint* c) {
-        if(c == nullptr)
-            return false;
-
-        if(m_prev == c && *c->m_next == *this) {
-            c->m_next = nullptr;
-            return true;
-        }
-
-        if (m_next == c && *c->m_prev == *this) {
-            c->m_prev = nullptr;
-            return true;
-        }
-        return false;
-    }
+    void setNext(ControlPoint* p) { m_next = p; }
+    void setPrev(ControlPoint* p) { m_prev = p; }
 
     bool operator==(ControlPoint& rhs) const {
         return x() == rhs.x() && y() == rhs.y();
@@ -54,15 +34,15 @@ class ChaikinsModel : public QAbstractListModel {
 public:
     enum ChaikinsModelRoles {
         PositionRole = Qt::UserRole + 1,
-        PrevRole = Qt::UserRole + 2
+        PrevRole = Qt::UserRole + 2,
+        NextRole = Qt::UserRole + 3
     };
 
     ChaikinsModel(QObject* parent = 0);
 
     Q_INVOKABLE int append(QPoint controlPoint);
-    Q_INVOKABLE void remove(int index);
-    Q_INVOKABLE void connect(QPoint c1, QPoint c2);
-    Q_INVOKABLE QPoint get(int index);
+    Q_INVOKABLE void remove(QPoint controlPoint);
+    Q_INVOKABLE QVariant get(int index);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -73,7 +53,7 @@ public:
 
 private:
     bool refineRec(QList<QPoint>& out, int level);
-    ControlPoint* find(QPoint p);
+    int find(QPoint p, ControlPoint** cp = nullptr);
     QList<ControlPoint> m_controlPoints;
 };
 

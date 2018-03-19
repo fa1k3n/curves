@@ -31,15 +31,13 @@ Window {
         onPressed: {
             var p = Qt.point(mouse.x, mouse.y);
             var index = chaikinsModel.append(p);
-            if(index > 0) // Connect with previous
-                chaikinsModel.connect(p, chaikinsModel.get(index - 1));
         }
     }
 
     //Component {
     //    id: line
 
-    Repeater {
+    /*Repeater {
         model: chaikinsModel
         id: connectors
 
@@ -67,7 +65,7 @@ Window {
             }
 
         }
-    }
+    }*/
 
     Repeater {
         model: chaikinsModel
@@ -114,7 +112,7 @@ Window {
                     }
                     ScriptAction {
                         script: {
-                            chaikinsModel.remove(index);
+                            chaikinsModel.remove(position);
                         }
                     }
                 }

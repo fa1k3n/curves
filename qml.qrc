@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>ControlPoint.qml</file>
+        <file>test/tst_chaikinsmodel.cpp</file>
     </qresource>
 </RCC>

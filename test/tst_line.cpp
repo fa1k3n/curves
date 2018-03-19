@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
+#include <gmock/gmock.h>
 
 #include <QSGGeometryNode>
 #include <QSGGeometry>
@@ -81,14 +82,25 @@ TEST(line, basicUpdatePaintNode) {
     QSGFlatColorMaterial* mat = dynamic_cast<QSGFlatColorMaterial*>(node->material());
     QSGGeometry* geom = node->geometry();
     EXPECT_TRUE(node->flags() & (QSGNode::OwnsMaterial | QSGNode::OwnsGeometry));
-    EXPECT_EQ(line.width(), geom->lineWidth());
     EXPECT_EQ(line.color(), mat->color());
 
     QSGGeometry::Point2D *vertices = geom->vertexDataAsPoint2D();
     EXPECT_EQ(line.start(), QPoint(vertices[0].x, vertices[0].y));
     EXPECT_EQ(line.end(), QPoint(vertices[1].x, vertices[1].y));
-
 }
 
+TEST(line, updatePaintNodeUsesCorrectParameters) {
+    QPoint p1(2, 3), p2(3, 4);
+    Line line(p1, p2);
+    line.setColor(QColor("green"));
+    QSGGeometryNode* node = static_cast<QSGGeometryNode*>(line.updatePaintNode(nullptr, nullptr));
+    QSGFlatColorMaterial* mat = dynamic_cast<QSGFlatColorMaterial*>(node->material());
+    QSGGeometry* geom = node->geometry();
+    EXPECT_EQ(QColor("green"), mat->color());
+
+    QSGGeometry::Point2D *vertices = geom->vertexDataAsPoint2D();
+    EXPECT_EQ(p1, QPoint(vertices[0].x, vertices[0].y));
+    EXPECT_EQ(p2, QPoint(vertices[1].x, vertices[1].y));
+}
 
 

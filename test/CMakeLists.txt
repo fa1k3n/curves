@@ -18,7 +18,11 @@ endif ()
 INCLUDE_DIRECTORIES("${PROJECT_SOURCE_DIR}/include")
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include)
 
-add_executable(${PROJECT_NAME}_test main.cpp tst_chaikins_model.h tst_line.cpp
+set(TESTCASES
+    tst_line.cpp
+    tst_chaikinsmodel.cpp
+    )
+add_executable(${PROJECT_NAME}_test main.cpp ${TESTCASES}
                ${GTestSrc}/src/gtest-all.cc
                ${GMockSrc}/src/gmock-all.cc)
 add_test(${PROJECT_NAME}_test COMMAND ${PROJECT_NAME}_test)

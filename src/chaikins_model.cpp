@@ -18,13 +18,14 @@ QVariant ChaikinsModel::data(const QModelIndex &index, int role) const {
     if(role == PositionRole)
         return m_controlPoints.at(index.row());
     else if(role == PrevRole) {
-        if(m_controlPoints.at(index.row()).prev()) {
-            return *m_controlPoints.at(index.row()).prev();
-        } else {
-            return m_controlPoints.at(index.row());
-        }
+        auto prev = m_controlPoints.at(index.row()).prev();
+        if (!prev) return QVariant();
+        return *prev;
+    } else if(role == NextRole) {
+        auto next = m_controlPoints.at(index.row()).next();
+        if (!next) return QVariant();
+        return *next;
     }
-
     return QVariant();
 }
 
@@ -32,11 +33,14 @@ QHash<int, QByteArray> ChaikinsModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[PositionRole] = "position";
     roles[PrevRole] = "prev";
+    roles[NextRole] = "next";
 
     return roles;
 }
 
 bool ChaikinsModel::refine(QList<QPoint>& out, int level) {
+    if(level < 0 || m_controlPoints.count() == 0)
+        return false;
     for(auto cp : m_controlPoints)
         out.append(cp);
     return refineRec(out, level);
@@ -62,51 +66,68 @@ bool ChaikinsModel::refineRec(QList<QPoint>& out, int level) {
 
 int ChaikinsModel::append(QPoint controlPoint) {
     beginInsertRows(QModelIndex(), m_controlPoints.count(), m_controlPoints.count());
-    m_controlPoints.append(ControlPoint(controlPoint.x(), controlPoint.y()));
+    ControlPoint* prev = nullptr;
+    if(!m_controlPoints.isEmpty())
+        prev = &m_controlPoints.last();
+    m_controlPoints.append(ControlPoint(controlPoint.x(), controlPoint.y(), prev));
+    // Update previous items next pointer
     endInsertRows();
+    if(prev)
+        setData(index(m_controlPoints.indexOf(*prev)), m_controlPoints.last(), NextRole);
+
     return m_controlPoints.count() - 1; // Return index just inserted
 }
 
-void ChaikinsModel::connect(QPoint c1, QPoint c2) {
-    auto cp1 = find(c1);
-    auto cp2 = find(c2);
-    if(cp1->connect(cp2))
-        std::cout << "Connected " << *cp1 << " with " << *cp2 << std::endl;
-
-}
-
-ControlPoint* ChaikinsModel::find(QPoint p) {
+int ChaikinsModel::find(QPoint p, ControlPoint** cp) {
     for(int i = 0; i < m_controlPoints.count(); i++) {
-        if(m_controlPoints[i] == p) return &m_controlPoints[i];
+        if(m_controlPoints[i] == p) {
+            if(cp != nullptr) *cp = &m_controlPoints[i];
+            return i;
+        }
     }
-    return nullptr;
+    return -1;
 }
 
-void ChaikinsModel::remove(int index) {
-    if(index < 0 || index >= m_controlPoints.count())
-        return;
+void ChaikinsModel::remove(QPoint p) {
+    ControlPoint* cp;
+    int i = find(p, &cp);
+    if(i == -1) return;
 
-    auto cp = m_controlPoints.at(index);
-    // Disconnect from neighbours
-    cp.disconnect(cp.prev());
-    cp.disconnect(cp.next());
+    // Connect neighbours
+    // Start with prev
+    if(cp->next() && cp->prev() && cp->prev()->next()) {
+        setData(index(find(*cp->prev())), *cp->next(), NextRole);
+    }
+    // Then next
+    if(cp->prev() && cp->next() && cp->next()->prev()) {
+        setData(index(find(*cp->next())), *cp->prev(), PrevRole);
+    }
 
     // Remove from model
-    beginRemoveRows(QModelIndex(), index, index);
-    m_controlPoints.removeAt(index);
+    beginRemoveRows(QModelIndex(), i, i);
+    m_controlPoints.removeAt(i);
     endRemoveRows();
 }
 
-QPoint ChaikinsModel::get(int index) {
-    return m_controlPoints.at(index);
+QVariant ChaikinsModel::get(int i) {
+    return data(index(i), PositionRole);
 }
 
 bool ChaikinsModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     QPoint p = value.toPoint();
+    ControlPoint* cp;
+    int i = find(p, &cp);
     if (p == m_controlPoints[index.row()])
         return false;
-    m_controlPoints[index.row()].setX(p.x());
-    m_controlPoints[index.row()].setY(p.y());
+    if(role == PositionRole) {
+        m_controlPoints[index.row()].setX(p.x());
+        m_controlPoints[index.row()].setY(p.y());
+    } else if (role == PrevRole) {
+        m_controlPoints[index.row()].setPrev(cp);
+    } else if (role == NextRole) {
+        m_controlPoints[index.row()].setNext(cp);
+    }
+
     emit dataChanged(index , index);
     return true;
 }
