@@ -22,7 +22,7 @@ set(COMMON_LIBS )
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 if (COVERAGE)
     set(COMMON_LIBS gcov ${COMMON_LIBS})
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
 endif()
 
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)

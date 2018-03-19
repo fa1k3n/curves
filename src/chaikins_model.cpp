@@ -95,12 +95,19 @@ void ChaikinsModel::remove(QPoint p) {
 
     // Connect neighbours
     // Start with prev
-    if(cp->next() && cp->prev() && cp->prev()->next()) {
-        setData(index(find(*cp->prev())), *cp->next(), NextRole);
+    if(cp->prev() && cp->prev()->next()) {
+        //auto n = cp->next() ? *cp->next() : QVariant();
+        if(cp->next())
+            setData(index(find(*cp->prev())), *cp->next(), NextRole);
+        else
+            m_controlPoints[find(*cp->prev())].setNext(nullptr);
     }
     // Then next
     if(cp->prev() && cp->next() && cp->next()->prev()) {
-        setData(index(find(*cp->next())), *cp->prev(), PrevRole);
+        if(cp->prev())
+            setData(index(find(*cp->next())), *cp->prev(), PrevRole);
+        else
+            m_controlPoints[find(*cp->next())].setPrev(nullptr);
     }
 
     // Remove from model
@@ -116,7 +123,7 @@ QVariant ChaikinsModel::get(int i) {
 bool ChaikinsModel::setData(const QModelIndex &index, const QVariant &value, int role) {
     QPoint p = value.toPoint();
     ControlPoint* cp;
-    int i = find(p, &cp);
+    find(p, &cp);
     if (p == m_controlPoints[index.row()])
         return false;
     if(role == PositionRole) {
