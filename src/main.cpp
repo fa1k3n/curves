@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     qmlRegisterType<Line>("fa1k3n.curves", 1, 0, "Line");
-    qmlRegisterType<Chaikins>("fa1k3n.curves", 1, 0, "ChaikinsCurve");
+    qmlRegisterType<ChaikinsCurve>("fa1k3n.curves", 1, 0, "ChaikinsCurve");
     qmlRegisterType<ChaikinsModel>("fa1k3n.curves", 1, 0, "ChaikinsModel");
 
     QQmlApplicationEngine engine;

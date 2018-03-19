@@ -4,15 +4,15 @@
 #include <QSGGeometryNode>
 #include <QSGFlatColorMaterial>
 
-Chaikins::Chaikins(QQuickItem *parent) : QQuickItem(parent)
+ChaikinsCurve::ChaikinsCurve(QQuickItem *parent) : QQuickItem(parent)
     ,m_refinment(0) {
     setFlag(ItemHasContents, true);
     update();
 }
 
-Chaikins::~Chaikins() {}
+ChaikinsCurve::~ChaikinsCurve() {}
 
-void Chaikins::setRefinement(int newRefinement) {
+void ChaikinsCurve::setRefinement(int newRefinement) {
     if (m_refinment == newRefinement)
         return;
 
@@ -21,7 +21,7 @@ void Chaikins::setRefinement(int newRefinement) {
     update();
 }
 
-void Chaikins::setModel(ChaikinsModel* model) {
+void ChaikinsCurve::setModel(ChaikinsModel* model) {
     if(m_model == model)
         return;
 
@@ -42,7 +42,7 @@ void Chaikins::setModel(ChaikinsModel* model) {
     update();
 }
 
-QSGNode* Chaikins::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
+QSGNode* ChaikinsCurve::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
     QSGGeometryNode *node = 0;
     QSGGeometry* geometry = 0;
 

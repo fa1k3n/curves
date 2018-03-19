@@ -57,14 +57,14 @@ private:
     QList<ControlPoint> m_controlPoints;
 };
 
-class Chaikins : public QQuickItem
+class ChaikinsCurve : public QQuickItem
 {
     Q_OBJECT
     Q_PROPERTY(int refinement READ refinement WRITE setRefinement NOTIFY refinementChanged)
     Q_PROPERTY(ChaikinsModel* model READ model WRITE setModel NOTIFY modelChanged)
 public:
-    Chaikins(QQuickItem *parent = 0);
-    ~Chaikins();
+    ChaikinsCurve(QQuickItem *parent = 0);
+    ~ChaikinsCurve();
 
     int refinement() { return m_refinment; }
     void setRefinement(int newRefinement);

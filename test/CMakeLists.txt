@@ -21,6 +21,7 @@ include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/incl
 set(TESTCASES
     tst_line.cpp
     tst_chaikinsmodel.cpp
+    tst_chaikinscurve.cpp
     )
 add_executable(${PROJECT_NAME}_test main.cpp ${TESTCASES}
                ${GTestSrc}/src/gtest-all.cc
