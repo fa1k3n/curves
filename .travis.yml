@@ -1,8 +1,6 @@
 language: cpp
 os: linux
-compiler: 
-    - gcc
-    - clang
+compiler: gcc
 sudo: required
 dist: xenial
 
