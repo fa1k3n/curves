@@ -21,7 +21,8 @@ TEST(ChaikinsCurve, basicConstructor) {
 }
 
 TEST(ChaikinsCurve, updateRefinement) {
-    ChaikinsCurve curve;
+    ChaikinsCurveMock curve;
+    EXPECT_CALL(curve, update());
     QSignalSpy spy(&curve, SIGNAL(refinementChanged(int)));
     ASSERT_TRUE(spy.isValid());
 
@@ -32,13 +33,22 @@ TEST(ChaikinsCurve, updateRefinement) {
 }
 
 TEST(ChaikinsCurve, updateRefinementWontDoAnythingIfSameValue) {
-    ChaikinsCurveMock curve;
+    ChaikinsCurve curve;
     QSignalSpy spy(&curve, SIGNAL(refinementChanged(int)));
-    EXPECT_CALL(curve, update());
     ASSERT_TRUE(spy.isValid());
 
     curve.setRefinement(3);
     curve.setRefinement(3);
     EXPECT_EQ(1, spy.count());
 
+}
+
+TEST(ChaikinsModel, addModelBasic) {
+    ChaikinsModel model;
+    ChaikinsCurveMock curve;
+
+    EXPECT_CALL(curve, update()).Times(2);
+    curve.setModel(&model);
+    model.append(QPoint(1,2));
+    EXPECT_TRUE(true);
 }
