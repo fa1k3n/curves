@@ -15,6 +15,19 @@ public:
     MOCK_METHOD0(update, void());
 };
 
+class ChaikinsModelMock : public ChaikinsModel {
+public:
+    void rowsInserted(const QModelIndex &parent, int first, int last) {
+        beginInsertRows(parent, first, last);
+        endInsertRows();
+    }
+
+    void rowsRemoved (const QModelIndex &parent, int first, int last) {
+        beginRemoveRows(parent, first, last);
+        endRemoveRows();
+    }
+};
+
 TEST(ChaikinsCurve, basicConstructor) {
     ChaikinsCurve curve;
     ASSERT_TRUE(true);
@@ -43,12 +56,23 @@ TEST(ChaikinsCurve, updateRefinementWontDoAnythingIfSameValue) {
 
 }
 
-TEST(ChaikinsModel, addModelBasic) {
-    ChaikinsModel model;
+TEST(ChaikinsCurve, addModelBasic) {
+    ChaikinsModelMock model;
     ChaikinsCurveMock curve;
 
-    EXPECT_CALL(curve, update()).Times(2);
+    EXPECT_CALL(curve, update()).Times(4);
     curve.setModel(&model);
-    model.append(QPoint(1,2));
-    EXPECT_TRUE(true);
+    emit model.rowsInserted(model.index(0), 0, 0);
+    emit model.rowsRemoved(model.index(0), 0, 0);
+    emit model.dataChanged(model.index(0), model.index(0));
+}
+
+
+TEST(ChaikinsCurve, setSameModelWontUpdateAnything) {
+    ChaikinsModelMock model;
+    ChaikinsCurveMock curve;
+
+    EXPECT_CALL(curve, update()).Times(1);
+    curve.setModel(&model);
+    curve.setModel(&model);
 }
