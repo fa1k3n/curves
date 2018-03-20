@@ -12,7 +12,7 @@ using ::testing::Return;
 
 class ChaikinsCurveMock : public ChaikinsCurve {
 public:
-    MOCK_METHOD2(updatePaintNode, QSGNode*(QSGNode*, UpdatePaintNodeData*));
+    MOCK_METHOD0(update, void());
 };
 
 TEST(ChaikinsCurve, basicConstructor) {
@@ -34,9 +34,11 @@ TEST(ChaikinsCurve, updateRefinement) {
 TEST(ChaikinsCurve, updateRefinementWontDoAnythingIfSameValue) {
     ChaikinsCurveMock curve;
     QSignalSpy spy(&curve, SIGNAL(refinementChanged(int)));
+    EXPECT_CALL(curve, update());
     ASSERT_TRUE(spy.isValid());
 
     curve.setRefinement(3);
     curve.setRefinement(3);
     EXPECT_EQ(1, spy.count());
+
 }

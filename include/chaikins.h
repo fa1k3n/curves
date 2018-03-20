@@ -72,6 +72,7 @@ public:
     ChaikinsModel* model() { return m_model; };
     void setModel(ChaikinsModel* model);
 
+    virtual void update(void) { QQuickItem::update(); } // Override update to make it mockable in testcase
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *);
 
 signals:

@@ -19,11 +19,11 @@ QVariant ChaikinsModel::data(const QModelIndex &index, int role) const {
         return m_controlPoints.at(index.row());
     else if(role == PrevRole) {
         auto prev = m_controlPoints.at(index.row()).prev();
-        if (!prev) return QVariant();
+        if (!prev) return QPoint();
         return *prev;
     } else if(role == NextRole) {
         auto next = m_controlPoints.at(index.row()).next();
-        if (!next) return QVariant();
+        if (!next) return QPoint();
         return *next;
     }
     return QVariant();
@@ -95,13 +95,13 @@ void ChaikinsModel::remove(QPoint p) {
 
     // Connect neighbours
     // Start with prev
-    if(cp->prev() && cp->prev()->next()) {
-        auto n = cp->next() ? *cp->next() : QVariant();
+    if(cp->prev()) {
+        auto n = cp->next() ? *cp->next() : QPoint();
         setData(index(find(*cp->prev())), n, NextRole);
     }
     // Then next
-    if(cp->prev() && cp->next() && cp->next()->prev()) {
-        auto n = cp->prev() ? *cp->prev() : QVariant();
+    if(cp->next()) {
+        auto n = cp->prev() ? *cp->prev() : QPoint();
         setData(index(find(*cp->next())), n, PrevRole);
     }
 
@@ -125,13 +125,9 @@ bool ChaikinsModel::setData(const QModelIndex &index, const QVariant &value, int
         m_controlPoints[index.row()].setX(p.x());
         m_controlPoints[index.row()].setY(p.y());
     } else if (role == PrevRole) {
-        ControlPoint* prev = nullptr;
-        if(cp && !cp->isNull()) prev = cp;
-        m_controlPoints[index.row()].setPrev(prev);
+        m_controlPoints[index.row()].setPrev(cp);
     } else if (role == NextRole) {
-        ControlPoint* n = nullptr;
-        if(cp && !cp->isNull()) n = cp;
-        m_controlPoints[index.row()].setNext(n);
+        m_controlPoints[index.row()].setNext(cp);
     }
 
     emit dataChanged(index , index);
