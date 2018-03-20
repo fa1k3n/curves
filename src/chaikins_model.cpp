@@ -125,9 +125,13 @@ bool ChaikinsModel::setData(const QModelIndex &index, const QVariant &value, int
         m_controlPoints[index.row()].setX(p.x());
         m_controlPoints[index.row()].setY(p.y());
     } else if (role == PrevRole) {
-        m_controlPoints[index.row()].setPrev(cp);
+        ControlPoint* prev = nullptr;
+        if(cp && !cp->isNull()) prev = cp;
+        m_controlPoints[index.row()].setPrev(prev);
     } else if (role == NextRole) {
-        m_controlPoints[index.row()].setNext(cp);
+        ControlPoint* n = nullptr;
+        if(cp && !cp->isNull()) n = cp;
+        m_controlPoints[index.row()].setNext(n);
     }
 
     emit dataChanged(index , index);
