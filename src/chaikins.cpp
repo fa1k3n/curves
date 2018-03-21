@@ -5,6 +5,7 @@
 #include <QSGFlatColorMaterial>
 
 ChaikinsCurve::ChaikinsCurve(QQuickItem *parent) : QQuickItem(parent)
+    ,m_model(nullptr)
     ,m_refinment(0) {
     setFlag(ItemHasContents, true);
     update();
@@ -45,6 +46,10 @@ void ChaikinsCurve::setModel(ChaikinsModel* model) {
 QSGNode* ChaikinsCurve::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) {
     QSGGeometryNode *node = 0;
     QSGGeometry* geometry = 0;
+
+    // Without any model we cant do anything
+    if(!m_model)
+        return nullptr;
 
     // Refine
     QList<QPoint> refinedData;
